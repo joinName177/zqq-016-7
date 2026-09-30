@@ -1,0 +1,6 @@
+services:
+  zqq-016:
+    build: .
+    ports:
+      - "8016:80"
+    restart: unless-stopped
