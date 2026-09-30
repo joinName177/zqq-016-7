@@ -29,6 +29,15 @@ export function renderTreeApp(
   });
 
   const eraTitles = ['起点分歧点', '+1年·涟漪微漾', '+3年·风向转折', '+5年·航道分野', '+10年·宿命标本'];
+  const recoveredSpecimens = specimens.filter(specimen => Boolean(specimen.recovery));
+
+  const formatRecoveryRaw = (raw: unknown) => {
+    try {
+      return JSON.stringify(raw, null, 2);
+    } catch {
+      return String(raw);
+    }
+  };
 
   container.innerHTML = `
     <div class="tree-app">
@@ -41,7 +50,7 @@ export function renderTreeApp(
           </div>
         </div>
         <button class="cabinet-btn" id="btnOpenCabinet">
-          🗄️ 平行人生标本馆 (${specimens.length})
+          🗄️ 平行人生标本馆 (${specimens.length})${recoveredSpecimens.length > 0 ? ` · ${recoveredSpecimens.length} 项待恢复` : ''}
         </button>
       </header>
 
@@ -128,21 +137,55 @@ export function renderTreeApp(
               </div>
             `
                 : `
+              ${
+                recoveredSpecimens.length > 0
+                  ? `
+                <div class="recovery-banner" role="alert">
+                  <strong>🩹 检测到 ${recoveredSpecimens.length} 项异常标本资料。</strong>
+                  <span>其余正常标本仍正常显示；异常卡片已保留恢复提示，核对原始资料后可移出标本集，或重新采集对应节点。</span>
+                </div>
+              `
+                  : ''
+              }
               <div class="specimens-grid">
                 ${specimens
                   .map(
                     s => `
-                  <div class="specimen-card">
-                    <span class="specimen-tag">标本领域 · ${esc(s.butterflyTag)}</span>
+                  <div class="specimen-card ${s.recovery ? 'specimen-card-damaged' : ''}">
+                    <div class="specimen-card-tags">
+                      <span class="specimen-tag">标本领域 · ${esc(s.butterflyTag)}</span>
+                      ${s.recovery ? `<span class="specimen-recovery-tag">${s.recovery.status === 'quarantined' ? '隔离区恢复' : '已自动修复'}</span>` : ''}
+                    </div>
                     <div class="specimen-title">${esc(s.title)}</div>
                     <div class="specimen-quote">${esc(s.quote)}</div>
+                    ${
+                      s.recovery
+                        ? `
+                      <div class="specimen-recovery-notice">
+                        <div class="specimen-recovery-title">恢复提示 · ${esc(s.recovery.recoveredAt)}</div>
+                        <ul>
+                          ${s.recovery.issues.map(issue => `<li>${esc(issue)}</li>`).join('')}
+                        </ul>
+                        ${
+                          s.recovery.source
+                            ? `<div class="specimen-recovery-source">来源：${esc(s.recovery.source)}</div>`
+                            : ''
+                        }
+                        <details>
+                          <summary>查看保留的原始资料</summary>
+                          <pre>${esc(formatRecoveryRaw(s.recovery.raw))}</pre>
+                        </details>
+                      </div>
+                    `
+                        : ''
+                    }
                     <div class="specimen-path">
                       <strong>演化因果链：</strong><br />
                       ${s.pathWay.map(p => `↳ ${esc(p)}`).join('<br />')}
                     </div>
                     <div class="specimen-footer">
-                      <span>采集时空：${s.harvestedAt}</span>
-                      <button class="btn-del-specimen" data-delid="${s.id}">移出标本集</button>
+                      <span>采集时空：${esc(s.harvestedAt)}</span>
+                      <button class="btn-del-specimen" data-delid="${esc(s.id)}">移出标本集</button>
                     </div>
                   </div>
                 `

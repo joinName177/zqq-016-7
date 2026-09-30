@@ -22,6 +22,12 @@ npm run dev
 npm run build
 ```
 
+标本馆持久化恢复校验（覆盖 JSON 损坏、异常数组项、缺字段与隔离区恢复）：
+
+```bash
+npm run verify:specimens
+```
+
 ## Docker 容器化部署
 
 ```bash

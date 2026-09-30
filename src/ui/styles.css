@@ -387,6 +387,90 @@ body {
   position: relative;
 }
 
+.specimen-card-damaged {
+  border-color: var(--rose);
+  border-style: dashed;
+  background:
+    linear-gradient(135deg, rgba(214, 117, 104, 0.08), transparent 42%),
+    #182d23;
+}
+
+.specimen-card-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 6px;
+}
+
+.recovery-banner {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-bottom: 18px;
+  padding: 12px 14px;
+  border: 1px solid var(--gold);
+  border-radius: 8px;
+  background: rgba(226, 177, 104, 0.1);
+  color: var(--gold);
+  font-size: 13px;
+}
+
+.specimen-recovery-tag {
+  font-size: 11px;
+  color: var(--rose);
+  font-weight: 700;
+  border: 1px solid var(--rose);
+  padding: 2px 6px;
+  border-radius: 3px;
+  display: inline-block;
+}
+
+.specimen-recovery-notice {
+  margin: 0 0 10px;
+  padding: 10px 12px;
+  border-radius: 6px;
+  background: rgba(214, 117, 104, 0.1);
+  border-left: 3px solid var(--rose);
+  color: #f6d7d2;
+  font-size: 12px;
+}
+
+.specimen-recovery-title {
+  color: var(--rose);
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+
+.specimen-recovery-notice ul {
+  padding-left: 18px;
+  margin-bottom: 8px;
+}
+
+.specimen-recovery-source {
+  color: var(--text-muted);
+  margin-bottom: 8px;
+}
+
+.specimen-recovery-notice details {
+  color: var(--text-muted);
+}
+
+.specimen-recovery-notice summary {
+  cursor: pointer;
+}
+
+.specimen-recovery-notice pre {
+  margin-top: 8px;
+  padding: 8px;
+  max-height: 160px;
+  overflow: auto;
+  border-radius: 4px;
+  background: rgba(0, 0, 0, 0.35);
+  white-space: pre-wrap;
+  word-break: break-word;
+  font-size: 10px;
+}
+
 .specimen-tag {
   font-size: 11px;
   color: var(--gold);

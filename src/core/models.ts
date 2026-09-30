@@ -17,6 +17,14 @@ export interface LifeNode {
   childrenIds: string[];
 }
 
+export interface LifeSpecimenRecovery {
+  status: 'recovered' | 'quarantined';
+  issues: string[];
+  source?: string;
+  recoveredAt: string;
+  raw?: unknown;
+}
+
 export interface LifeSpecimen {
   id: string;
   nodeId: string;
@@ -28,6 +36,7 @@ export interface LifeSpecimen {
   butterflyTag: string;
   resonanceRating: number;
   harvestedAt: string;
+  recovery?: LifeSpecimenRecovery;
 }
 
 export interface CounterfactualTree {
