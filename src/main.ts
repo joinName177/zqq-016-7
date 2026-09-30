@@ -20,12 +20,12 @@ let isCabinetOpen = false;
 const rootEl = document.getElementById('app')!;
 
 function refreshView() {
-  const specimens = specimenAdapter.getAll();
+  const specimenData = specimenAdapter.load();
 
   renderTreeApp(
     rootEl,
     currentTree,
-    specimens,
+    specimenData,
     isCabinetOpen,
     PRESETS,
     {
@@ -49,6 +49,10 @@ function refreshView() {
       },
       onDeleteSpecimen: (id: string) => {
         specimenAdapter.remove(id);
+        refreshView();
+      },
+      onPurgeCorrupted: () => {
+        specimenAdapter.purgeCorrupted();
         refreshView();
       },
       onToggleCabinet: (open: boolean) => {

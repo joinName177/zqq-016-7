@@ -438,3 +438,48 @@ body {
   color: var(--rose);
   cursor: pointer;
 }
+
+/* Corrupted / repaired specimen states */
+.cabinet-corrupted-badge {
+  font-size: 11px;
+  color: #7a1f16;
+  background: rgba(255, 255, 255, 0.55);
+  border-radius: 4px;
+  padding: 1px 5px;
+  margin-left: 4px;
+}
+
+.specimen-card-corrupted {
+  border: 1px dashed var(--rose);
+  background: rgba(214, 117, 104, 0.06);
+}
+
+.corrupted-tag {
+  color: var(--rose);
+  border-color: var(--rose);
+}
+
+.specimen-repaired-tag {
+  font-size: 10px;
+  color: var(--leaf);
+  border: 1px solid var(--leaf);
+  padding: 1px 5px;
+  border-radius: 3px;
+  margin-left: 6px;
+}
+
+.corrupted-actions {
+  text-align: right;
+  margin-top: 16px;
+}
+
+.btn-purge-corrupted {
+  border-color: var(--rose);
+  color: var(--rose);
+}
+
+.btn-purge-corrupted:hover {
+  background: rgba(214, 117, 104, 0.12);
+  border-color: var(--rose);
+  color: var(--rose);
+}

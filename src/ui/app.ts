@@ -1,4 +1,4 @@
-import { CounterfactualTree, LifeSpecimen, LifeNode } from '../core/models';
+import { CounterfactualTree, LifeNode, SpecimenLoadResult } from '../core/models';
 
 export interface TreeUIHandlers {
   onGrowNewTree: (assumption: string) => void;
@@ -6,19 +6,21 @@ export interface TreeUIHandlers {
   onPruneNode: (nodeId: string) => void;
   onHarvestNode: (nodeId: string) => void;
   onDeleteSpecimen: (id: string) => void;
+  onPurgeCorrupted: () => void;
   onToggleCabinet: (open: boolean) => void;
 }
 
 export function renderTreeApp(
   container: HTMLElement,
   tree: CounterfactualTree,
-  specimens: LifeSpecimen[],
+  specimenData: SpecimenLoadResult,
   isCabinetOpen: boolean,
   presets: string[],
   handlers: TreeUIHandlers
 ) {
-  const esc = (s: string) =>
-    s.replace(/[&<>'"]/g, t => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[t] || t));
+  const { specimens, repairedIds, corrupted } = specimenData;
+  const esc = (s: unknown) =>
+    String(s ?? '').replace(/[&<>'"]/g, t => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[t] || t));
 
   // Organize nodes by layer index (0 to 4)
   const layers: LifeNode[][] = [[], [], [], [], []];
@@ -41,7 +43,7 @@ export function renderTreeApp(
           </div>
         </div>
         <button class="cabinet-btn" id="btnOpenCabinet">
-          🗄️ 平行人生标本馆 (${specimens.length})
+          🗄️ 平行人生标本馆 (${specimens.length})${corrupted.length > 0 ? ` <span class="cabinet-corrupted-badge">⚠ ${corrupted.length} 项受损</span>` : ''}
         </button>
       </header>
 
@@ -121,7 +123,7 @@ export function renderTreeApp(
             </div>
 
             ${
-              specimens.length === 0
+              specimens.length === 0 && corrupted.length === 0
                 ? `
               <div style="text-align:center;padding:40px;color:var(--text-muted);">
                 🌱 标本柜暂空。请在反事实树上点击节点的【📌 采集标本】按钮，将某段平行人生命运封存入馆。
@@ -134,6 +136,7 @@ export function renderTreeApp(
                     s => `
                   <div class="specimen-card">
                     <span class="specimen-tag">标本领域 · ${esc(s.butterflyTag)}</span>
+                    ${repairedIds.includes(s.id) ? '<span class="specimen-repaired-tag">已自动修补缺失字段</span>' : ''}
                     <div class="specimen-title">${esc(s.title)}</div>
                     <div class="specimen-quote">${esc(s.quote)}</div>
                     <div class="specimen-path">
@@ -141,14 +144,41 @@ export function renderTreeApp(
                       ${s.pathWay.map(p => `↳ ${esc(p)}`).join('<br />')}
                     </div>
                     <div class="specimen-footer">
-                      <span>采集时空：${s.harvestedAt}</span>
-                      <button class="btn-del-specimen" data-delid="${s.id}">移出标本集</button>
+                      <span>采集时空：${esc(s.harvestedAt)}</span>
+                      <button class="btn-del-specimen" data-delid="${esc(s.id)}">移出标本集</button>
+                    </div>
+                  </div>
+                `
+                  )
+                  .join('')}
+                ${corrupted
+                  .map(
+                    c => `
+                  <div class="specimen-card specimen-card-corrupted">
+                    <span class="specimen-tag corrupted-tag">⚠ 标本记录受损</span>
+                    <div class="specimen-title">一枚无法复原的平行人生标本</div>
+                    <div class="specimen-quote">读取时校验失败：${esc(c.reason)}。该记录已被隔离，不影响其他标本展示。</div>
+                    <div class="specimen-path">
+                      <strong>残留数据片段：</strong><br />
+                      ${esc(c.preview)}
+                    </div>
+                    <div class="specimen-footer">
+                      <span>恢复提示：回到反事实树重新【📌 采集】该节点，或清理受损记录</span>
                     </div>
                   </div>
                 `
                   )
                   .join('')}
               </div>
+              ${
+                corrupted.length > 0
+                  ? `
+                <div class="corrupted-actions">
+                  <button class="btn-action btn-purge-corrupted" id="btnPurgeCorrupted">🧹 清理全部受损记录 (${corrupted.length})</button>
+                </div>
+              `
+                  : ''
+              }
               <div style="text-align:right;margin-top:24px;">
                 <button class="cabinet-btn" onclick="window.print()">🖨️ 导出 / 打印标本图册</button>
               </div>
@@ -220,4 +250,6 @@ export function renderTreeApp(
       if (delId) handlers.onDeleteSpecimen(delId);
     });
   });
+
+  container.querySelector('#btnPurgeCorrupted')?.addEventListener('click', () => handlers.onPurgeCorrupted());
 }

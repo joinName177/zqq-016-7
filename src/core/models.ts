@@ -38,3 +38,17 @@ export interface CounterfactualTree {
   createdAt: string;
   specimens: LifeSpecimen[];
 }
+
+/** 无法自动复原的受损标本记录（仅保留提示信息，不参与正常渲染） */
+export interface CorruptedSpecimenRecord {
+  key: string; // 稳定标识（基于存储下标生成）
+  reason: string; // 人类可读的损坏原因
+  preview: string; // 残留数据片段预览（截断）
+}
+
+/** 标本馆读取结果：健康标本 + 自动修复标记 + 受损记录提示 */
+export interface SpecimenLoadResult {
+  specimens: LifeSpecimen[]; // 可正常展示的标本（缺字段的已自动补齐默认值）
+  repairedIds: string[]; // 曾被自动修补字段的标本 id
+  corrupted: CorruptedSpecimenRecord[]; // 无法复原的异常记录
+}
